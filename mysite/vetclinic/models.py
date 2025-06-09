@@ -2,8 +2,6 @@ from django.db import models
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 
-
-# ---------- справочники ----------
 class Role(models.Model):
     id = models.AutoField(primary_key=True, db_column="role_id")
     name = models.CharField(_("Название роли"), max_length=50, unique=True)
@@ -15,7 +13,6 @@ class Role(models.Model):
 
     def __str__(self):
         return self.name
-
 
 class Species(models.Model):
     id = models.AutoField(primary_key=True, db_column="species_id")
@@ -29,7 +26,6 @@ class Species(models.Model):
     def __str__(self):
         return self.name
 
-
 class AppointmentStatus(models.Model):
     id = models.AutoField(primary_key=True, db_column="status_id")
     name = models.CharField(_("Статус"), max_length=50, unique=True)
@@ -42,17 +38,11 @@ class AppointmentStatus(models.Model):
     def __str__(self):
         return self.name
 
-
-# ---------- пользователи ----------
 class User(models.Model):
     id = models.BigAutoField(primary_key=True, db_column="user_id")
     role = models.ForeignKey(
-        Role,
-        db_column="role_id",
-        on_delete=models.SET_NULL,
-        null=True,
-        verbose_name=_("роль"),
-        related_name="users",
+        Role, db_column="role_id", on_delete=models.SET_NULL,
+        null=True, verbose_name=_("роль"), related_name="users"
     )
     first_name = models.CharField(_("имя"), max_length=100)
     last_name = models.CharField(_("фамилия"), max_length=100, blank=True)
@@ -71,8 +61,6 @@ class User(models.Model):
         full = f"{self.first_name} {self.last_name}".strip()
         return full or self.email or f"User #{self.pk}"
 
-
-# ---------- ветеринарные клиники, врачи ----------
 class Clinic(models.Model):
     id = models.AutoField(primary_key=True, db_column="clinic_id")
     name = models.CharField(_("название"), max_length=150)
@@ -91,7 +79,6 @@ class Clinic(models.Model):
     def __str__(self):
         return self.name
 
-
 class Service(models.Model):
     id = models.AutoField(primary_key=True, db_column="service_id")
     name = models.CharField(_("название"), max_length=150)
@@ -109,34 +96,21 @@ class Service(models.Model):
     def __str__(self):
         return self.name
 
-
 class Vet(models.Model):
     id = models.BigAutoField(primary_key=True, db_column="vet_id")
     user = models.ForeignKey(
-        User,
-        db_column="user_id",
-        on_delete=models.CASCADE,
-        related_name="veterinary_profiles",
-        verbose_name=_("пользователь"),
+        User, db_column="user_id", on_delete=models.CASCADE,
+        related_name="veterinary_profiles", verbose_name=_("пользователь")
     )
     clinic = models.ForeignKey(
-        Clinic,
-        db_column="clinic_id",
-        on_delete=models.SET_NULL,
-        null=True,
-        related_name="vets",
-        verbose_name=_("клиника"),
+        Clinic, db_column="clinic_id", on_delete=models.SET_NULL,
+        null=True, related_name="vets", verbose_name=_("клиника")
     )
     specialization = models.CharField(_("специализация"), max_length=150, blank=True)
     bio = models.TextField(_("биография"), blank=True)
-    photo = models.ImageField(
-        _("фото"), upload_to="vets/", blank=True, null=True, db_column="photo_path"
-    )
+    photo = models.ImageField(_("фото"), upload_to="vets/", blank=True, null=True, db_column="photo_path")
     services = models.ManyToManyField(
-        Service,
-        through="VetService",
-        related_name="vets",
-        verbose_name=_("оказываемые услуги"),
+        Service, through="VetService", related_name="vets", verbose_name=_("оказываемые услуги")
     )
     created_at = models.DateTimeField(_("создан"), default=timezone.now)
     updated_at = models.DateTimeField(_("обновлён"), auto_now=True)
@@ -147,13 +121,11 @@ class Vet(models.Model):
         verbose_name_plural = _("ветеринары")
 
     def __str__(self):
-        return f"{self.full_name} ({self.specialization})" if self.specialization else self.full_name
+        return self.full_name
 
-    # для list_display
     @property
     def full_name(self):
         return str(self.user)
-
 
 class VetService(models.Model):
     vet = models.ForeignKey(
@@ -172,37 +144,24 @@ class VetService(models.Model):
     def __str__(self):
         return f"{self.vet} → {self.service}"
 
-
-# ---------- питомцы ----------
 class Pet(models.Model):
     GENDERS = [("M", _("М")), ("F", _("Ж"))]
 
     id = models.BigAutoField(primary_key=True, db_column="pet_id")
     owner = models.ForeignKey(
-        User,
-        db_column="user_id",
-        on_delete=models.CASCADE,
-        related_name="pets",
-        verbose_name=_("владелец"),
+        User, db_column="user_id", on_delete=models.CASCADE,
+        related_name="pets", verbose_name=_("владелец")
     )
     species = models.ForeignKey(
-        Species,
-        db_column="species_id",
-        on_delete=models.SET_NULL,
-        null=True,
-        related_name="pets",
-        verbose_name=_("вид"),
+        Species, db_column="species_id", on_delete=models.SET_NULL,
+        null=True, related_name="pets", verbose_name=_("вид")
     )
     name = models.CharField(_("кличка"), max_length=100)
     breed = models.CharField(_("порода"), max_length=100, blank=True)
     gender = models.CharField(_("пол"), max_length=1, choices=GENDERS)
     date_of_birth = models.DateField(_("дата рождения"), null=True, blank=True)
-    weight_kg = models.DecimalField(
-        _("вес (кг)"), max_digits=5, decimal_places=2, null=True, blank=True
-    )
-    photo = models.ImageField(
-        _("фото"), upload_to="pets/", blank=True, null=True, db_column="photo_path"
-    )
+    weight_kg = models.DecimalField(_("вес (кг)"), max_digits=5, decimal_places=2, null=True, blank=True)
+    photo = models.ImageField(_("фото"), upload_to="pets/", blank=True, null=True, db_column="photo_path")
     created_at = models.DateTimeField(_("создан"), default=timezone.now)
     updated_at = models.DateTimeField(_("обновлён"), auto_now=True)
 
@@ -214,7 +173,6 @@ class Pet(models.Model):
     def __str__(self):
         return self.name
 
-    # вспомогательный метод для админки
     @property
     def age_years(self):
         if not self.date_of_birth:
@@ -222,65 +180,40 @@ class Pet(models.Model):
         return (timezone.now().date() - self.date_of_birth).days // 365
     age_years.fget.short_description = _("возраст, лет")
 
-
-# ---------- записи ----------
 class Appointment(models.Model):
     id = models.BigAutoField(primary_key=True, db_column="appointment_id")
     pet = models.ForeignKey(
-        Pet, db_column="pet_id", on_delete=models.CASCADE, related_name="appointments", verbose_name=_("питомец")
+        Pet, db_column="pet_id", on_delete=models.CASCADE,
+        related_name="appointments", verbose_name=_("питомец")
     )
     clinic = models.ForeignKey(
-        Clinic,
-        db_column="clinic_id",
-        on_delete=models.SET_NULL,
-        null=True,
-        related_name="appointments",
-        verbose_name=_("клиника"),
+        Clinic, db_column="clinic_id", on_delete=models.SET_NULL,
+        null=True, related_name="appointments", verbose_name=_("клиника")
     )
     service = models.ForeignKey(
-        Service,
-        db_column="service_id",
-        on_delete=models.SET_NULL,
-        null=True,
-        related_name="appointments",
-        verbose_name=_("услуга"),
+        Service, db_column="service_id", on_delete=models.SET_NULL,
+        null=True, related_name="appointments", verbose_name=_("услуга")
     )
     vet = models.ForeignKey(
-        Vet,
-        db_column="vet_id",
-        on_delete=models.SET_NULL,
-        null=True,
-        related_name="appointments",
-        verbose_name=_("ветеринар"),
+        Vet, db_column="vet_id", on_delete=models.SET_NULL,
+        null=True, related_name="appointments", verbose_name=_("ветеринар")
     )
     start_time = models.DateTimeField(_("начало"))
     end_time = models.DateTimeField(_("конец"), null=True, blank=True)
     status = models.ForeignKey(
-        AppointmentStatus,
-        db_column="status_id",
-        on_delete=models.SET_NULL,
-        null=True,
-        related_name="appointments",
-        verbose_name=_("статус"),
+        AppointmentStatus, db_column="status_id", on_delete=models.SET_NULL,
+        null=True, related_name="appointments", verbose_name=_("статус")
     )
     notes = models.TextField(_("заметки"), blank=True)
     created_at = models.DateTimeField(_("создан"), default=timezone.now)
     updated_at = models.DateTimeField(_("обновлён"), auto_now=True)
     created_by_user = models.ForeignKey(
-        User,
-        db_column="created_by_user_id",
-        on_delete=models.SET_NULL,
-        null=True,
-        related_name="+",
-        verbose_name=_("создал"),
+        User, db_column="created_by_user_id", on_delete=models.SET_NULL,
+        null=True, related_name="+", verbose_name=_("создал")
     )
     updated_by_user = models.ForeignKey(
-        User,
-        db_column="updated_by_user_id",
-        on_delete=models.SET_NULL,
-        null=True,
-        related_name="+",
-        verbose_name=_("обновил"),
+        User, db_column="updated_by_user_id", on_delete=models.SET_NULL,
+        null=True, related_name="+", verbose_name=_("обновил")
     )
 
     class Meta:
@@ -291,9 +224,31 @@ class Appointment(models.Model):
     def __str__(self):
         return f"{self.pet} • {self.start_time:%d.%m %H:%M}"
 
-    @property
-    def duration(self):
-        if self.end_time:
-            return (self.end_time - self.start_time).seconds // 60
-        return None
-    duration.fget.short_description = _("длительность, мин")
+    def clean(self):
+        from django.core.exceptions import ValidationError
+        qs = Appointment.objects.filter(
+            vet=self.vet,
+            start_time__lt=self.end_time,
+            end_time__gt=self.start_time,
+        ).exclude(id=self.id)
+        if qs.exists():
+            raise ValidationError("У врача уже есть приём в этот промежуток времени.")
+
+class Favorite(models.Model):
+    user = models.ForeignKey(
+        User, on_delete=models.CASCADE,
+        related_name='favorites', verbose_name=_("пользователь")
+    )
+    pet = models.ForeignKey(
+        Pet, on_delete=models.CASCADE,
+        related_name='favorited_by', verbose_name=_("питомец")
+    )
+
+    class Meta:
+        db_table = "favorites"
+        unique_together = ("user", "pet")
+        verbose_name = _("избранное")
+        verbose_name_plural = _("избранные")
+
+    def __str__(self):
+        return f"{self.user} → {self.pet}"

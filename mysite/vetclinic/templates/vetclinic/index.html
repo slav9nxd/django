@@ -1,0 +1,117 @@
+{% extends 'vetclinic/base.html' %}
+{% load static %}
+
+{% block title %}Главная – VetClinic{% endblock %}
+
+{% block content %}
+<div class="row">
+  <!-- Виджет 1: Ближайшие приёмы -->
+  <div class="col-md-6 mb-4">
+    <div class="card h-100">
+      <div class="card-header">Ближайшие приёмы (7 дней)</div>
+      <ul class="list-group list-group-flush">
+        {% for a in upcoming %}
+        <li class="list-group-item d-flex justify-content-between align-items-center">
+          <div>
+            <a href="{% url 'vetclinic:appointment_list' %}" class="text-decoration-none">
+              <strong>{{ a.pet.name }}</strong> – {{ a.start_time|date:"d.m H:i" }},
+              {{ a.vet.user.first_name }} {{ a.vet.user.last_name }}
+            </a>
+          </div>
+          <button type="button" class="btn btn-outline-warning btn-sm">
+            Добавить в избранное
+          </button>
+        </li>
+        {% empty %}
+        <li class="list-group-item text-muted">Нет запланированных приёмов.</li>
+        {% endfor %}
+      </ul>
+      <div class="card-footer text-end">
+        <a href="{% url 'vetclinic:appointment_list' %}" class="btn btn-sm btn-outline-primary">
+          Все приёмы →
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Виджет 2: Популярные услуги -->
+  <div class="col-md-6 mb-4">
+    <div class="card h-100">
+      <div class="card-header">Популярные услуги (30 дней)</div>
+      <ul class="list-group list-group-flush">
+        {% for s in popular %}
+        <li class="list-group-item d-flex justify-content-between align-items-center">
+          <div>
+            <a href="{% url 'vetclinic:service_list' %}" class="text-decoration-none">
+              {{ s.name }}
+            </a>
+            <span class="badge bg-success ms-2">{{ s.times }}</span>
+          </div>
+          <button type="button" class="btn btn-outline-warning btn-sm">
+            Добавить в избранное
+          </button>
+        </li>
+        {% empty %}
+        <li class="list-group-item text-muted">Нет популярных услуг.</li>
+        {% endfor %}
+      </ul>
+      <div class="card-footer text-end">
+        <a href="{% url 'vetclinic:service_list' %}" class="btn btn-sm btn-outline-primary">
+          Все услуги →
+        </a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Виджет 3: Новые питомцы с фото -->
+<div class="card mb-4">
+  <div class="card-header">Новые питомцы</div>
+  <div class="card-body">
+    <div class="row">
+      {% for p in newest %}
+      <div class="col-6 col-md-3 text-center mb-3 position-relative">
+        {% if p.photo %}
+          <img src="{{ p.photo.url }}" 
+               alt="Фото {{ p.name }}" 
+               class="img-fluid rounded-circle mb-2" 
+               style="width:100px; height:100px; object-fit:cover;">
+        {% else %}
+          <img src="{% static 'vetclinic/img/placeholder.png' %}"
+               alt="Нет фото" 
+               class="img-fluid rounded-circle mb-2" 
+               style="width:100px; height:100px; object-fit:cover;">
+        {% endif %}
+        <h6 class="mb-0">{{ p.name }}</h6>
+        <small class="text-muted">{{ p.species.name }}</small>
+        <button type="button" 
+                class="btn btn-outline-warning btn-sm position-absolute" 
+                style="top:5px; right:5px;">
+          ☆
+        </button>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+  <div class="card-footer text-end">
+    <a href="{% url 'vetclinic:pet_list' %}" class="btn btn-sm btn-outline-primary">
+      Все питомцы →
+    </a>
+  </div>
+</div>
+
+<!-- Блок поиска питомца -->
+<div class="card mb-4">
+  <div class="card-header">Поиск питомца</div>
+  <div class="card-body">
+    <form class="row g-2" method="get" action="{% url 'vetclinic:pet_search' %}">
+      <div class="col-auto">
+        <input type="text" name="q" class="form-control" placeholder="Кличка или владелец">
+      </div>
+      <div class="col-auto">
+        <button type="submit" class="btn btn-primary">Найти</button>
+      </div>
+    </form>
+  </div>
+</div>
+{% endblock %}
