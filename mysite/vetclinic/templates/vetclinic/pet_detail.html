@@ -1,0 +1,24 @@
+{% extends 'vetclinic/base.html' %}
+{% block title %}Питомец {{ pet.name }}{% endblock %}
+{% block content %}
+<h1>Питомец {{ pet.name }}</h1>
+<ul class="list-group mb-3">
+  <li class="list-group-item"><strong>Вид:</strong> {{ pet.species.name }}</li>
+  <li class="list-group-item"><strong>Порода:</strong> {{ pet.breed }}</li>
+  <li class="list-group-item"><strong>Пол:</strong> {{ pet.get_gender_display }}</li>
+  <li class="list-group-item"><strong>Дата рождения:</strong> {{ pet.date_of_birth }}</li>
+  <li class="list-group-item"><strong>Вес (кг):</strong> {{ pet.weight_kg }}</li>
+  <li class="list-group-item"><strong>Владелец:</strong> {{ pet.owner }}</li>
+</ul>
+<h2>Записи на приём</h2>
+<ul class="list-group">
+  {% for appt in pet.appointments.all %}
+  <li class="list-group-item">
+    {{ appt.start_time|date:"d.m.Y H:i" }} — {{ appt.service.name }} ({{ appt.status.name }})
+  </li>
+  {% empty %}
+  <li class="list-group-item">Нет записей</li>
+  {% endfor %}
+</ul>
+<a class="btn btn-secondary mt-3" href="{% url 'vetclinic:pet_list' %}">Назад к списку</a>
+{% endblock %}

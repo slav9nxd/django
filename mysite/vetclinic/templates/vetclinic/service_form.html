@@ -1,0 +1,11 @@
+{% extends 'vetclinic/base.html' %}
+{% block title %}{% if form.instance.pk %}Редактировать{% else %}Добавить{% endif %} услугу{% endblock %}
+{% block content %}
+<h1>{% if form.instance.pk %}Редактировать{% else %}Добавить{% endif %} услугу</h1>
+<form method="post">
+  {% csrf_token %}
+  {{ form.as_p }}
+  <button class="btn btn-success">Сохранить</button>
+  <a href="{% url 'vetclinic:service_list' %}" class="btn btn-secondary">Отменить</a>
+</form>
+{% endblock %}

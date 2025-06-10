@@ -1,0 +1,9 @@
+{% extends 'vetclinic/base.html' %}
+{% block title %}Удалить услугу{% endblock %}
+{% block content %}
+<h1>Удалить «{{ object.name }}»?</h1>
+<form method="post">{% csrf_token %}
+  <button class="btn btn-danger">Да, удалить</button>
+  <a href="{% url 'vetclinic:service_list' %}" class="btn btn-secondary">Отмена</a>
+</form>
+{% endblock %}

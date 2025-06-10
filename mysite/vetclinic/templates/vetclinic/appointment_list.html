@@ -1,0 +1,20 @@
+{% extends 'vetclinic/base.html' %}
+{% block title %}Список приёмов{% endblock %}
+{% block content %}
+<h1>Все приёмы</h1>
+<table class="table table-striped">
+  <thead><tr><th>Время</th><th>Питомец</th><th>Услуга</th><th>Врач</th></tr></thead>
+  <tbody>
+  {% for a in appointments %}
+    <tr>
+      <td>{{ a.start_time|date:"d.m.Y H:i" }}</td>
+      <td>{{ a.pet.name }}</td>
+      <td>{{ a.service.name }}</td>
+      <td>{{ a.vet.user.get_full_name }}</td>
+    </tr>
+  {% empty %}
+    <tr><td colspan="4">Записей нет</td></tr>
+  {% endfor %}
+  </tbody>
+</table>
+{% endblock %}

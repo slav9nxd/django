@@ -1,0 +1,25 @@
+{% extends 'vetclinic/base.html' %}
+{% block title %}Услуги{% endblock %}
+{% block content %}
+<h1>Все услуги</h1>
+<a href="{% url 'vetclinic:service_add' %}" class="btn btn-primary mb-3">Добавить услугу</a>
+<table class="table table-striped">
+  <thead><tr><th>ID</th><th>Название</th><th>Цена</th><th>Длительность</th><th></th></tr></thead>
+  <tbody>
+  {% for s in services %}
+    <tr>
+      <td>{{ s.id }}</td>
+      <td><a href="{% url 'vetclinic:service_detail' s.pk %}">{{ s.name }}</a></td>
+      <td>{{ s.base_price }} ₽</td>
+      <td>{{ s.duration_minutes }} мин</td>
+      <td>
+        <a class="btn btn-sm btn-secondary" href="{% url 'vetclinic:service_edit' s.pk %}">Ред.</a>
+        <a class="btn btn-sm btn-danger" href="{% url 'vetclinic:service_delete' s.pk %}">Удал.</a>
+      </td>
+    </tr>
+  {% empty %}
+    <tr><td colspan="5">Нет услуг</td></tr>
+  {% endfor %}
+  </tbody>
+</table>
+{% endblock %}

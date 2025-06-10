@@ -1,0 +1,29 @@
+{% extends 'vetclinic/base.html' %}
+{% block title %}Список питомцев{% endblock %}
+{% block content %}
+<h1>Питомцы</h1>
+<a class="btn btn-primary mb-3" href="{% url 'vetclinic:pet_add' %}">Добавить питомца</a>
+<table class="table table-striped">
+  <thead>
+    <tr>
+      <th>ID</th><th>Имя</th><th>Вид</th><th>Владелец</th><th>Действия</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for pet in pets %}
+    <tr>
+      <td>{{ pet.id }}</td>
+      <td><a href="{% url 'vetclinic:pet_detail' pet.pk %}">{{ pet.name }}</a></td>
+      <td>{{ pet.species.name }}</td>
+      <td>{{ pet.owner }}</td>
+      <td>
+        <a class="btn btn-sm btn-secondary" href="{% url 'vetclinic:pet_edit' pet.pk %}">Ред.</a>
+        <a class="btn btn-sm btn-danger" href="{% url 'vetclinic:pet_delete' pet.pk %}">Удал.</a>
+      </td>
+    </tr>
+    {% empty %}
+    <tr><td colspan="5">Нет питомцев</td></tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% endblock %}

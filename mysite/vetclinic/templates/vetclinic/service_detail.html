@@ -1,0 +1,23 @@
+{% extends 'vetclinic/base.html' %}
+{% block title %}{{ service.name }}{% endblock %}
+{% block content %}
+<h1>{{ service.name }}</h1>
+<p><strong>Цена:</strong> {{ service.base_price }} ₽</p>
+<p><strong>Длительность:</strong> {{ service.duration_minutes }} мин</p>
+<p>{{ service.description|linebreaks }}</p>
+
+<h3>Последние 10 приёмов с этой услугой</h3>
+<ul class="list-group mb-3">
+  {% for a in last_appointments %}
+    <li class="list-group-item">
+      {{ a.start_time|date:"d.m.Y H:i" }} —
+      {{ a.pet.name }} ({{ a.clinic.name }}) /
+      {{ a.vet.user.get_full_name }}
+    </li>
+  {% empty %}
+    <li class="list-group-item text-muted">Пока нет приёмов.</li>
+  {% endfor %}
+</ul>
+
+<a class="btn btn-secondary" href="{% url 'vetclinic:service_list' %}">Назад к списку</a>
+{% endblock %}

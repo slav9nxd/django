@@ -1,3 +1,4 @@
+{% load static %}
 <!doctype html>
 <html lang="ru">
 <head>
@@ -23,8 +24,9 @@
     <div class="collapse navbar-collapse" id="navMenu">
       <ul class="navbar-nav ms-auto">
         <li class="nav-item"><a class="nav-link" href="#">Филиалы</a></li>
-        <li class="nav-item"><a class="nav-link" href="#">Услуги</a></li>
+        <li class="nav-item"><a class="nav-link" href="{% url 'vetclinic:service_list' %}">Услуги</a></li>
         <li class="nav-item"><a class="nav-link" href="#">Специалисты</a></li>
+        <li class="nav-item"><a class="nav-link" href="{% url 'vetclinic:pet_list' %}">Питомцы</a></li>
         <li class="nav-item"><a class="nav-link btn btn-primary text-white"
                                  href="#">Записаться</a></li>
       </ul>
